@@ -1,15 +1,15 @@
 import React from 'react';
-import {ThemeConsumer} from '../context/theme';
+import ThemeContext from '../context/theme';
 import {NavLink} from 'react-router-dom';
 
 const activeStyle = {
     color: 'rgb(187, 46, 31)'
   }
 
-function Nav (){
+function Nav ({toggleTheme}){
+
+    const theme = React.useContext(ThemeContext);
     return (
-        <ThemeConsumer>
-        {({theme,toggleTheme})=>(
                 <nav className='row space-between'>
                     <ul className='row nav'>
                         <li>
@@ -28,8 +28,6 @@ function Nav (){
                         {theme === 'light' ? '🔦': '💡' }
                     </button>
                 </nav>      
-        )}
-        </ThemeConsumer>
     )
 }
 

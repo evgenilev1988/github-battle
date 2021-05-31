@@ -12,48 +12,36 @@ const styles = {
     }
   }
 
-class Loading extends React.Component{
 
-    state = {
-        content:this.props.text
-    }
 
-    componentDidMount(){
-        const {speed, text} = this.props;
-        this.interval = window.setInterval(()=>{
-            this.state.content === text + '...' ? 
-            this.setState({
-                content:text
-            }) : this.setState((state)=>{
-                return {
-                    ...state,
-                    content : state.content + '.'
-                }
-            })
-        },speed)
-    }
+const Loading = (props)=>{
+    const {speed = 300, text = 'Loading'} = props;
+    const [content, setContent] = React.useState(text);
 
-    componentWillUnmount(){
-        window.clearInterval(this.interval);
-    }
+    React.useEffect(()=>{
 
-    render(){
-        return (
-            <p style={styles.content}>
-                {this.state.content}
-            </p>
-        )
-    }
+        let interval = window.setInterval(
+            () => content === `${text}...` ? setContent(text) : setContent((c) => `${c}.`)
+            ,speed
+        );
+
+        return ()=>{
+            window.clearInterval(interval);
+        }
+
+
+    },[content,speed,text]);
+
+    return (
+        <p style={styles.content}>
+            {content}
+        </p>
+    )
 }
-
 
 Loading.propTypes = {
-text:PropTypes.string.isRequired,
-speed:PropTypes.number.isRequired
+text:PropTypes.string,
+speed:PropTypes.number
 }
 
-Loading.defaultProps = {
-    text: 'Loading',
-    speed: 300
-}
 export default Loading;

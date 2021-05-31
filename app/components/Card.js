@@ -1,12 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {ThemeConsumer} from '../context/theme';
+import ThemeContext from '../context/theme';
 
-function Card({header,subHeader,avatar, href, name,children}){
+const Card = ({header,subHeader,avatar, href, name,children}) => {
+  const theme = React.useContext(ThemeContext);
     return (
-      <ThemeConsumer>
-        {
-          ({theme})=>(
             <div className={`card bg-${theme}`}>
             <h4 className='header-lg center-text'>
                 {header}
@@ -26,11 +24,6 @@ function Card({header,subHeader,avatar, href, name,children}){
           </h2>
           {children}
         </div>
-          )
-        }
-      </ThemeConsumer>
-      
-       
     )
 }
 

@@ -1,6 +1,8 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
+
 
 module.exports = {
     entry:'./app/index.js',
@@ -20,6 +22,9 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: 'app/index.html'
         }),
+    
+        new NodePolyfillPlugin()
+        ,
         new CopyPlugin({ patterns: [{ from : '_redirects' }] })
     ],
     devServer:{

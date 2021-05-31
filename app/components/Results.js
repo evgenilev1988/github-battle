@@ -68,61 +68,74 @@ PlayerCard.propTypes = {
   user: PropTypes.object.isRequired
 }
 
-class Resutls extends React.Component{
-  state = {
-    winner:null,
-    looser:null,
-    error:null,
-    loading:true
-}  
 
-    componentDidMount(){
 
-      const {location} = this.props;
-        const {playerOne, playerTwo} = queryString.parse(location.search);
-        battle([playerOne, playerTwo]).then((players)=>{
-            this.setState({
-                winner:players[0],
-                looser:players[1],
-                error:null,
-                loading:false
-            });
-
-            console.log('data',players)
-        }).catch((message)=>{
-            this.setState({
-                error:message,
-                loading:false
-            })
-        });
-    }
-
-    
-    render(){
-        const { winner, looser, error, loading } = this.state
-
-        if (loading === true) {
-          return (<Loading/>)
+const resultsReducer = (state,action) => {
+  switch(action.type){
+    case 'success':
+      return {
+        ...state,
+        winner:action.players[0],
+        looser:action.players[1],
+        error:null,
+        loading:false
+      }
+      case 'error':
+        return {
+          ...state,
+          error:action.message,
+          loading:false
         }
-    
-        if (error) {
-          return (
-            <p className='center-text error'>{error}</p>
-          )
-        }
+        default:
+          throw new Error();
+  }
+}
 
-        return (
-          <React.Fragment>
-            <div className='grid space-around container-sm'>
-                <PlayerCard title={looser.score === winner.score ? "Tie" : "Winner"} user={winner} />
-                <PlayerCard title={looser.score === winner.score ? "Tie" : "Looser"} user={looser} />    
-            </div>
-            <Link className='btn dark-btn btn-space' to='/battle'>
-              Reset
-            </Link>
-            </React.Fragment>
-        )  
-    }
+const Resutls = (props) => {
+const {location} = props;
+const {playerOne, playerTwo} = queryString.parse(location.search);
+const [state, dispatch] = React.useReducer(resultsReducer,{
+  loading: true,
+  error: null
+})
+
+
+React.useEffect(()=>{battle([playerOne, playerTwo]).then((players)=>{
+  dispatch({type:'success',players});
+  console.log('data',players)
+}).catch((message)=>{
+  dispatch({type:'error',message})
+  this.setState({
+      error:message,
+      loading:false
+  })
+});
+},[]);
+
+
+
+if (state.loading === true) {
+  return (<Loading/>)
+}
+
+if (state.error) {
+  return (
+    <p className='center-text error'>{error}</p>
+  )
+}
+
+
+  return (
+    <React.Fragment>
+      <div className='grid space-around container-sm'>
+          <PlayerCard title={state.looser.score === state.winner.score ? "Tie" : "Winner"} user={state.winner} />
+          <PlayerCard title={state.looser.score === state.winner.score ? "Tie" : "Looser"} user={state.looser} />    
+      </div>
+      <Link className='btn dark-btn btn-space' to='/battle'>
+        Reset
+      </Link>
+      </React.Fragment>
+  )  
 }
 
 
